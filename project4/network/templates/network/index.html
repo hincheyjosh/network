@@ -1,0 +1,57 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block title %}Posts{% endblock %}
+
+{% block body %}
+<div class="container-lg">
+      
+  {% for post in page_obj %}
+    <div class="card text-white mb-3" style="max-width: 30rem; background-color: #375a7f;">
+        <div class="card-header">{{ post.timestamp }}</div>
+        <div class="card-body">
+            <h4 class="card-title"><a href="{% url 'profile' post.user %}">{{ post.user }}</a></h4>
+            <p class="card-text" id="post{{ post.id }}body">{{ post.body }}</p>
+            <div id="editView{{ post.id }}" style="display:none;">
+              <form id="editForm{{post.id}}" onsubmit="return false">
+                <textarea id="editText{{post.id}}" class="form-control">{{post.body}}</textarea>
+                <button type="submit" class="btn btn-success" id="editSubmit">Save Changes</button>
+              </form>
+            </div>
+            {% if user in post.likes.all %}
+            <span id="likeSection{{post.id}}"><p class="card-text like" onclick="unlike({{post.id}})">&#129293; {{post.total_likes}}</p></span>
+            {% else %}
+              <span id="likeSection{{post.id}}"><p class="card-text like" onclick="like({{post.id}})">&#129293; {{post.total_likes}}</p></span>
+            {% endif %}
+            {% ifequal request.user post.user %}
+              <a href="javascript:void(0)" onclick="editPost({{ post.id }})">Edit</a>
+            {% endifequal %}
+        </div>
+    </div>
+  {% endfor %}
+
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+    {% endif %}
+    {% for i in page_obj.paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+    {% endif %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock  %}

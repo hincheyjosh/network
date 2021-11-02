@@ -1,0 +1,22 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block title %}New Post{% endblock %}
+
+{% block body %}
+<div class="container form-group create-form">
+    <h5>New Post</h5>
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+</div>
+    
+
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/create.js' %}"></script>
+{% endblock  %}
